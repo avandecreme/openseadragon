@@ -1323,8 +1323,10 @@ function drawTiles( tiledImage, lastDrawn ) {
         // When zoomed in a lot (>100%) the tile edges are visible.
         // So we have to composite them at ~100% and scale them up together.
         useSketch = true;
+        var canvas = tiledImage._drawer.context.canvas;
         sketchScale = tile.getScaleForEdgeSmoothing();
-        sketchTranslate = tile.getTranslationForEdgeSmoothing(sketchScale);
+        sketchTranslate = tile.getTranslationForEdgeSmoothing(sketchScale,
+            new $.Point(canvas.width, canvas.height));
     }
 
     if ( useSketch ) {
