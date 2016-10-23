@@ -335,6 +335,8 @@ $.Drawer.prototype = {
                         self.sketchCanvas.height = sketchCanvasSize.y;
                     });
                 }
+
+                document.getElementById("sketchDiv").appendChild(this.sketchCanvas);
             }
             context = this.sketchContext;
         }
@@ -447,17 +449,30 @@ $.Drawer.prototype = {
                 var heightDiff = this.sketchCanvas.height - this.canvas.height;
                 widthExt = Math.round(widthDiff / 2);
                 heightExt = Math.round(heightDiff / 2);
+                // widthExt = 20000;
+                // heightExt = 20000;
             }
+            var sx = position.x - widthExt * scale;
+            var sy = position.y - heightExt * scale;
+            var sWidth = (this.canvas.width + 2 * widthExt) * scale;
+            var sHeight = (this.canvas.height  + 2 * heightExt) * scale;
+            // var sx = position.x;
+            // var sy = position.y;
+            // var sWidth = this.sketchCanvas.width;
+            // var sHeight = this.sketchCanvas.height;
+
+            var dx = -widthExt;
+            var dy = -heightExt;
+            var dWidth = this.canvas.width + 2 * widthExt;
+            var dHeight = this.canvas.height + 2 * heightExt;
+            // var dx = position.x-widthExt;
+            // var dy = position.y-heightExt;
+            // var dWidth = this.canvas.width+ 2 * widthExt;
+            // var dHeight = this.canvas.height+ 2 * heightExt;
             this.context.drawImage(
                 this.sketchCanvas,
-                position.x - widthExt * scale,
-                position.y - heightExt * scale,
-                (this.canvas.width + 2 * widthExt) * scale,
-                (this.canvas.height  + 2 * heightExt) * scale,
-                -widthExt,
-                -heightExt,
-                this.canvas.width + 2 * widthExt,
-                this.canvas.height + 2 * heightExt
+                sx, sy, sWidth, sHeight,
+                dx, dy, dWidth, dHeight
             );
         }
         this.context.restore();
@@ -617,10 +632,10 @@ $.Drawer.prototype = {
     // private
     _calculateSketchCanvasSize: function() {
         var canvasSize = this._calculateCanvasSize();
-        if (this.viewport.getRotation() === 0 &&
-            !this.viewer.world._hasRotatedItem()) {
-            return canvasSize;
-        }
+        // if (this.viewport.getRotation() === 0 &&
+        //     !this.viewer.world._hasRotatedItem()) {
+        //     return canvasSize;
+        // }
         // If the viewport is rotated, we need a larger sketch canvas in order
         // to support edge smoothing.
         var sketchCanvasSize = Math.ceil(Math.sqrt(

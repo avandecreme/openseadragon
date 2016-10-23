@@ -998,7 +998,7 @@ $.extend($.TiledImage.prototype, $.EventSource.prototype, /** @lends OpenSeadrag
         }
 
         // Perform the actual drawing
-        drawTiles(this, this.lastDrawn);
+        drawTiles(this, this.lastDrawn, drawArea);
 
         // Load the new 'best' tile
         if (bestTile && !bestTile.context2D) {
@@ -1528,7 +1528,7 @@ function compareTiles( previousBest, tile ) {
     return previousBest;
 }
 
-function drawTiles( tiledImage, lastDrawn ) {
+function drawTiles(tiledImage, lastDrawn, drawArea) {
     if (lastDrawn.length === 0) {
         return;
     }
@@ -1550,9 +1550,24 @@ function drawTiles( tiledImage, lastDrawn ) {
         // Note: Disabled on iOS devices per default as it causes a native crash
         useSketch = true;
         sketchScale = tile.getScaleForEdgeSmoothing();
+
+        var topLeftBound = drawArea.getBoundingBox().getTopLeft();
+        // var topLeftBound = tiledImage.viewport.getBoundsWithMargins(true).getBoundingBox().getTopLeft();
+
+        var topLeftPixel = tiledImage.viewport.pixelFromPointNoRotate(topLeftBound, true);
+        var minX = topLeftPixel.x
+        var minY = topLeftPixel.y;
+// minX = -103;
+// minY = -103;
+
         sketchTranslate = tile.getTranslationForEdgeSmoothing(sketchScale,
             tiledImage._drawer.getCanvasSize(false),
-            tiledImage._drawer.getCanvasSize(true));
+            tiledImage._drawer.getCanvasSize(true),
+            minX,
+            minY);
+        // var sketchContext = tiledImage._drawer._getContext(true);
+        // sketchContext.save();
+        // sketchContext.translate(sketchTranslate.x, sketchTranslate.y);
     }
 
     var bounds;
@@ -1661,6 +1676,7 @@ function drawTiles( tiledImage, lastDrawn ) {
 
     if (useSketch) {
         if (sketchScale) {
+            // sketchContext.restore();
             if (tiledImage.viewport.degrees !== 0) {
                 tiledImage._drawer._offsetForRotation(
                     tiledImage.viewport.degrees, false);
